@@ -11,6 +11,8 @@ module.exports = {
         if(existingUser) {
             const compare = await bcrypt.compareSync(password, existingUser[0].hash)
             if(compare) {
+                req.session.userId = existingUser[0].id
+
                 res.status(200).json({
                     id: existingUser[0].id,
                     username: existingUser[0].username,
@@ -34,6 +36,8 @@ module.exports = {
 
             const newUser = await db.createUser(username, hash, `https://robohash.org/${username}`)
 
+            res.session.userid = newUser[0].id
+
             res.status(200).json({
                 id: newUser[0].id,
                 username: newUser[0].username,
@@ -42,13 +46,39 @@ module.exports = {
         }
     },
 
+    me: async (req, res) => {
+        const db = req.app.get('db')
+        const id = req.session.userId
+
+        try {
+            const user = await db.checkForUserById(id)
+
+            res.status(200).json({
+                id: user[0].id,
+                username: user[0].username,
+                profileImg: user[0].profile_img
+            })
+        } catch(err) {
+            console.log('Read logged in user', err)
+            res.status(500).json({message: 'Could not reload session'})
+        }
+
+    },
+
+    logout: (req, res) => {
+        req.session.destroy()
+        res.sendStatus(200)
+    },
+
     getPosts: async (req, res) => {
         const db = req.app.get('db')
-        const userId = req.params.id
+        const userId = req.session.userId
         const {search, myPosts} = req.query
 
         let searchString = `%${search}%`
         let searchUser = myPosts == 'true' ? 0 : userId
+
+        console.log(searchUser, searchString)
 
         const posts = await db.getPosts(searchUser, searchString)
 
@@ -66,7 +96,8 @@ module.exports = {
 
     createPost: async (req, res) => {
         const db = req.app.get('db')
-        const {author, title, img, content} = req.body
+        const {title, img, content} = req.body
+        const author = req.session.userId
 
         const result = await db.createPost(author, title, img, content)
         res.sendStatus(200)

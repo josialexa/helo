@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import {connect} from 'react-redux'
+// import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 
-class Dashboard extends Component {
+export default class Dashboard extends Component {
     constructor() {
         super()
 
@@ -30,7 +30,7 @@ class Dashboard extends Component {
     }
 
     getPosts = (searchTerm = this.state.search) => {
-        axios.get(`/api/posts/${this.props.id}?myPosts=${this.state.myPosts}&search=${searchTerm}`)
+        axios.get(`/api/posts?myPosts=${this.state.myPosts}&search=${searchTerm}`)
             .then(res => this.setState({posts: res.data}))
     }
 
@@ -98,8 +98,8 @@ class Dashboard extends Component {
     }
 }
 
-const checkout = state => ({
-    id: state.id
-})
+// const checkout = state => ({
+//     id: state.id
+// })
 
-export default connect(checkout)(Dashboard)
+// export default connect(checkout)(Dashboard)

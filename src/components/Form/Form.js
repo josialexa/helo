@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import {connect} from 'react-redux'
+// import {connect} from 'react-redux'
 import defaultImg from '../../no_image.jpg'
 import './Form.css'
 
-class Form extends Component {
+export default class Form extends Component {
     constructor() {
         super()
 
@@ -24,7 +24,7 @@ class Form extends Component {
     submit = () => {
         const {title, img, content} = this.state
         const newPost = {
-            author: this.props.id,
+            // author: this.props.id,
             title,
             img,
             content
@@ -53,8 +53,8 @@ class Form extends Component {
     }
 }
 
-const checkout = state => ({
-    id: state.id
-})
+// const checkout = state => ({
+//     id: state.id
+// })
 
-export default connect(checkout)(Form)
+// export default connect(checkout)(Form)
